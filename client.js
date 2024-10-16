@@ -126,10 +126,6 @@ const INDEX_SCRIPTS = [
 
 ];
 
-const SCRIPTS_INDEX = [
-
-];
-
 const print = (x, printover = true) => {
 	var repeat = process.stdout.columns - x.length;
 	process.stdout.write(
@@ -146,8 +142,7 @@ async function fetch1(url) {
 				print(`${res.statusCode} on https://discord.com/assets/${url}`, false);
 				resolve(fetch2(url));
 			} else {
-				print(`Unknown Error on https://discord.com/assets/${url}`, false);
-				resolve(fetch2(url));
+				resolve(fetch1(url));
 			}
 		});
 	});
@@ -162,8 +157,7 @@ async function fetch2(url) {
 				print(`${res.statusCode} on https://web.archive.org/web/0id_/https://discord.com/assets/${url}`, false);
 				resolve(fetch3(url));
 			} else {
-				print(`Unknown Error on https://web.archive.org/web/0id_/https://discord.com/assets/${url}`, false);
-				resolve(fetch3(url));
+				resolve(fetch2(url));
 			}
 		});
 	});
@@ -178,8 +172,7 @@ async function fetch3(url) {
 				print(`${res.statusCode} on https://web.archive.org/web/0id_/https://discordapp.com/assets/${url}`, false);
 				resolve(null);
 			} else {
-				print(`Unknown Error on https://web.archive.org/web/0id_/https://discordapp.com/assets/${url}`, false);
-				resolve(null);
+				resolve(fetch3(url));
 			}
 		});
 	});
@@ -194,12 +187,16 @@ const processFile = async (asset) => {
 	await fs.writeFile(path.join(CACHE_PATH, asset), text);
 	let ret = new Set([
 		...(text.match(/"[A-Fa-f0-9]{20}"/g) || []),
+		...[...text.matchAll(/Worker\(.\..\+"(.*?\.worker\.js)"/g)].map((x) => x[1],),
+		...[...text.matchAll(/\.exports=.\..\+"(.*?\.worker\.js)"/g)].map((x) => x[1],),
+		...[...text.matchAll(/\/assets\/([a-zA-Z0-9]*?\.worker\.js)/g)].map((x) => x[1],),
 		...[...text.matchAll(/\.exports=.\..\+"(.*?\..{0,5})"/g)].map((x) => x[1],),
 		...[...text.matchAll(/\/assets\/([a-zA-Z0-9]*?\.[a-z0-9]{0,5})/g)].map((x) => x[1],),
 	]);
 	return [...ret].map((x) => x ? x.replace(/"/g, "") : []);
 
 };
+
 
 (async () => {
 	if (!existsSync(CACHE_PATH)) {
