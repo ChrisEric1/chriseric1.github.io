@@ -1,8 +1,13 @@
 const path = require("path");
-const request = require("request");
+const fetch = require("node-fetch");
 const fs = require('fs').promises;
 const { existsSync } = require("fs");
 const CACHE_PATH = path.join(__dirname, "assets");
+const http = require("http");
+const https = require("https");
+const httpAgent = new http.Agent({ keepAlive: true });
+const httpsAgent = new https.Agent({ keepAlive: true });
+const agent = (_parsedURL) => _parsedURL.protocol == "http:" ? httpAgent : httpsAgent;
 
 const INDEX_SCRIPTS = [
 
@@ -57,68 +62,65 @@ const INDEX_SCRIPTS = [
 
 
 "652f40427e1f5186ad54836074898279.png",
-"e32fa452d05857876c40.js",
-"5d8726d69bf89d6f65a4.js",
-"2bca5148146ab09a0f77.js",
-"d943c696a7d081165f2e.js",
-"33aed1f9230e77ce76a5.js",
-"fe73376921c65fff6f4e.js",
-"2d7c91165c69794f7cdf.js",
-"b54a8e4276f962374014.js",
-"c998708f2ec84efc2b17.js",
-"8732ffbaa4db766eaeda.js",
-"69a837e8f0a6148f79d4.js",
-"6f54cc4a3b2425499812.js",
-"c4841ffd68ef18e72c74.js",
-"a05494229db9db18d1fd.js",
-"31f60d0eac416f549610.js",
-"7ce22207b6093fa48ce2.js",
-"bd23a945fc6a002b69dd.js",
-"0a3326537e5ac1bd6356.js",
-"903eb9637aad65df4cb9.js",
-"1e81bb61bb67f1b6bcf5.js",
-"ab7115a135e701df9371.js",
-"fafb04913bf5f73d2b09.js",
-"64d93e7b0540c2eba72a.js",
-"f6fa5ff452231bc21dc5.js",
-"67ff064a4a7c18371bb8.js",
-"f57daf4fe1060a854601.js",
-"e549da88d3c71066d7f8.js",
-"0ee47e86a39a306838e1.js",
-"706f50a67359776269eb.js",
-"5af7770d1e301c70d1a1.js",
-"79431b00de7b75a4db1e.js",
-"6471a588bed23e5999a9.js",
-"85a8f8ae620b3594b1f8.js",
-"d59cb6ea1615700cfa3b.js",
-"83095bfd363aca9d7f4f.js",
-"c97fd1f307b771296da8.js",
-"24d29c779cc0d0e54e30.js",
-"253e9938399db795209a.js",
-"af9a6f21c45a6ab373e6.js",
-"873084ef44f8797f1167.js",
-"c6115c96f0693a4cba36.js",
-"05f07654abf35562b4cc.js",
-"e9580c98baadf514cb22.js",
-"d88f2aecd9b3de7e9de7.js",
-"f57cda03f4a3c29d8d69.js",
-"7d70ec39c61ceacf1c3b.js",
-"40532.40e342277ad71b458bff.css",
+"e02290aaa8dac5d195c2.js",
+"b4499d2a6b9046b1b402.js",
+"4b58fa778cc38e586a72.js",
+"4b582ee1842099625350.js",
+"38c96749096ac4dbb7f0.js",
+"969413679de40b9126e0.js",
+"89c07f6464c4df65e564.js",
+"dc27e9f8c501ecdfe290.js",
+"d6e22fa832cf37fe714d.js",
+"3c3325feeb9e546ccb49.js",
+"2b4910b6cd2fd1ab016d.js",
+"8d2eda55fddac6c1d33a.js",
+"eebf4f03942f2301f69b.js",
+"a1f5f16a094861ec6adf.js",
+"d096beea5c932b38c6fa.js",
+"2d3867e958e47e88104a.js",
+"2cf66aad2f5fe29327fd.js",
+"7fea300c56ec94a57220.js",
+"46429fa52d446195e526.js",
+"333280bb4dcdb11aec24.js",
+"829fea82c38be7177a11.js",
+"66d04738a7fb759d2656.js",
+"4d9f1df159179a4c2e91.js",
+"508ebf8fd09e4d7dfc8d.js",
+"bee07f3a5c565c60793c.js",
+"04b6e764f047c642e9ec.js",
+"98ace94cfa9f17fcf2d9.js",
+"c7f23c21f324407b775e.js",
+"9c4b2d313c6e1c864e89.js",
+"1312141aadbb0db546ba.js",
+"2bbcc08cac2c9a5c33f2.js",
+"ecaf785bc6925815b071.js",
+"ea0a21be971880ff6c6c.js",
+"a5c2c9470601e8560717.js",
+"aea432f8f5f3309ad87e.js",
+"3ad533c40f6819ead25e.js",
+"9ad6610fbedc218dde60.js",
+"26c071d7282d6c654254.js",
+"6e98d426b375ee024fd2.js",
+"fdb805b74dfafd472d48.js",
+"d6d60439a57f2edd54ac.js",
+"3d5204dc59667b880802.js",
+"0a5d08252796c4d9bc4c.js",
+"40532.ccd7077c8311c798fcff.css",
 "ec2c34cadd4b5f4594415127380a85e6.ico",
-"8c7b444f293b0ca5719d.js",
-"e32fa452d05857876c40.js",
-"c5698726e0854d4b8624.js",
-"bf41583d33a683460193.js",
+"83ace7450e110d16319e.js",
+"e02290aaa8dac5d195c2.js",
+"4f3b3c576b879a5f75d1.js",
+"699456246fdfe7589855.js",
 
 // End FBC
 
 // Begin FBC Devel
 
-"532.7fbd5147ee8b816c530d.css",
+"532.c1e7901581106ed2d853.css",
 "847541504914fd33810e70a0ea73177e.ico",
-"4f91987a7b38426ef720.js",
-"abf9b56982d2eacb4e8e.js",
-"3ecba7af535756b7d6fd.js",
+"5ebe36b40ed22fb5be8a.js",
+"2086c7c3aa4594a8e718.js",
+"839dac47751c4acf3004.js",
 
 // End FBC Devel
 
@@ -133,59 +135,56 @@ const print = (x, printover = true) => {
 	);
 };
 
-async function fetch1(url) {
-	return new Promise((resolve) => {
-		request.get(("https://discord.com/assets/"+url), {timeout: 2022}, (err, res, body) => {
-			if (res && res.statusCode && res.statusCode == 200) {
-				resolve(body);
-			} else if (res && res.statusCode && res.statusCode !== 200) {
-				print(`${res.statusCode} on https://discord.com/assets/${url}`, false);
-				resolve(fetch2(url));
-			} else {
-				resolve(fetch1(url));
-			}
-		});
-	});
-}
-
-async function fetch2(url) {
-	return new Promise((resolve) => {
-		request.get(("https://web.archive.org/web/0id_/https://discord.com/assets/"+url), {timeout: 2022}, (err, res, body) => {
-			if (res && res.statusCode && res.statusCode == 200) {
-				resolve(body);
-			} else if (res && res.statusCode && res.statusCode !== 200) {
-				print(`${res.statusCode} on https://web.archive.org/web/0id_/https://discord.com/assets/${url}`, false);
-				resolve(fetch3(url));
-			} else {
-				resolve(fetch2(url));
-			}
-		});
-	});
-}
-
-async function fetch3(url) {
-	return new Promise((resolve) => {
-		request.get(("https://web.archive.org/web/0id_/https://discordapp.com/assets/"+url), {timeout: 2022}, (err, res, body) => {
-			if (res && res.statusCode && res.statusCode == 200) {
-				resolve(body);
-			} else if (res && res.statusCode && res.statusCode !== 200) {
-				print(`${res.statusCode} on https://web.archive.org/web/0id_/https://discordapp.com/assets/${url}`, false);
-				resolve(null);
-			} else {
-				resolve(fetch3(url));
-			}
-		});
-	});
-}
-
 const processFile = async (asset) => {
 	asset = `${asset}${asset.includes(".") ? "" : ".js"}`;
-	let text = await fetch1(asset);
+	var res = await fetch(("https://discord.com/assets/"+asset), { agent });
+	if (res && res.status && res.status == 200) {
+		if (asset.includes(".") && !asset.includes(".js") && !asset.includes(".css")) {
+			await fs.writeFile(path.join(CACHE_PATH, asset), await res.buffer());
+			var text = null;
+		} else {
+			var text = await res.text();
+		}
+	} else if (res && res.status && res.status !== 200) {
+		print(`${res.status} on https://discord.com/assets/${asset}`, false);
+		var res = await fetch(("https://web.archive.org/web/0id_/https://discord.com/assets/"+asset), { agent });
+		if (res && res.status && res.status == 200) {
+			if (asset.includes(".") && !asset.includes(".js") && !asset.includes(".css")) {
+				await fs.writeFile(path.join(CACHE_PATH, asset), await res.buffer());
+				var text = null;
+			} else {
+				var text = await res.text();
+			}
+		} else if (res && res.status && res.status !== 200) {
+			print(`${res.status} on https://web.archive.org/web/0id_/https://discord.com/assets/${asset}`, false);
+			var res = await fetch(("https://web.archive.org/web/0id_/https://discordapp.com/assets/"+asset), { agent });
+			if (res && res.status && res.status == 200) {
+				if (asset.includes(".") && !asset.includes(".js") && !asset.includes(".css")) {
+					await fs.writeFile(path.join(CACHE_PATH, asset), await res.buffer());
+					var text = null;
+				} else {
+					var text = await res.text();
+				}
+			} else if (res && res.status && res.status !== 200) {
+				print(`${res.status} on https://web.archive.org/web/0id_/https://discordapp.com/assets/${asset}`, false);
+				var text = null;
+			} else {
+				processFile(asset);
+				var text = null;
+			}
+		} else {
+			processFile(asset);
+			var text = null;
+		}
+	} else {
+		processFile(asset);
+		var text = null;
+	}
 	if (text == null) {
-		return [];
+		return []
 	}
 	await fs.writeFile(path.join(CACHE_PATH, asset), text);
-	let ret = new Set([
+	var ret = new Set([
 		...(text.match(/"[A-Fa-f0-9]{20}"/g) || []),
 		...[...text.matchAll(/Worker\(.\..\+"(.*?\.worker\.js)"/g)].map((x) => x[1],),
 		...[...text.matchAll(/\.exports=.\..\+"(.*?\.worker\.js)"/g)].map((x) => x[1],),
@@ -203,17 +202,15 @@ const processFile = async (asset) => {
 		await fs.mkdir(CACHE_PATH, { recursive: true });
 	}
 	const assets = new Set(INDEX_SCRIPTS);
-	let promises = [];
-	let index = 0;
-	for (let asset of assets) {
+	var promises = [];
+	var index = 0;
+	for (var asset of assets) {
 		index += 1;
 		print(`Scraping Asset: ${asset} - Assets Remaining: ${assets.size - index}`);
 		promises.push(processFile(asset));
-		if (promises.length > 100 || index == assets.size) {
-			const values = await Promise.all(promises);
-			promises = [];
-			values.flat().forEach((x) => assets.add(x));
-		}
+		const values = await Promise.all(promises);
+		promises = [];
+		values.flat().forEach((x) => assets.add(x));
 	}
 	print("Done Scraping Assets!", false);
 })();
